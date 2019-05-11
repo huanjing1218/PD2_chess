@@ -561,7 +561,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             for(int i = 0; i < 2; ++i) {
                 for(int j = 0; j < 6; ++j) {
                     if(num[i][j] <= 0)
-                        setChess[i][j]->hide();
+                        setChess[i][j]->setPixmap(QPixmap());
                 }
             }
             if(num[0][0] == 0 && num[1][0] == 0)
