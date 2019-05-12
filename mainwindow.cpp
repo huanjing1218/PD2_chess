@@ -560,15 +560,14 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             col = -1;
             for(int i = 0; i < 2; ++i) {
                 for(int j = 0; j < 6; ++j) {
-<<<<<<< HEAD
                     if(num[i][j] <= 0) {
                         setChess[i][j]->setPixmap(QPixmap());
                         recordSet[i][j] = "";
                     }
-=======
-                    if(num[i][j] <= 0)
+                    if(num[i][j] <= 0) {
                         setChess[i][j]->setPixmap(QPixmap());
->>>>>>> a1f00ec8332f597749a610874904c2803f094ad7
+                        recordSet[i][j] = "";
+                    }
                 }
             }
             if(num[0][0] == 0 && num[1][0] == 0)
