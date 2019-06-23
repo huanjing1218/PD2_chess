@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     chess[7][5]->setPixmap(QPixmap(":/img/white_bishop.png").scaled(70,70));
     chess[7][6]->setPixmap(QPixmap(":/img/white_knight.png").scaled(70,70));
     chess[7][7]->setPixmap(QPixmap(":/img/white_rook.png").scaled(70,70));
+
     for(int i = 0; i < 8; ++i) {
         chess[1][i]->setPixmap(QPixmap(":/img/black_pawn.png").scaled(70,70));
         chess[6][i]->setPixmap(QPixmap(":/img/white_pawn.png").scaled(70,70));
@@ -51,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     record[7][5] = "wb";
     record[7][6] = "wn";
     record[7][7] = "wr";
+
     for(int i = 0; i < 8; ++i) {
         record[1][i] = "bp";
         record[6][i] = "wp";
@@ -85,14 +87,14 @@ MainWindow::MainWindow(QWidget *parent) :
     title->setPos(80, 190);
     scene->addItem(title);
 
-    result_black = new QGraphicsTextItem("Black won!");
+    result_black = new QGraphicsTextItem("Black win!");
     result_black->setFont(QFont("Comic Sans MS", 70));
     result_black->setDefaultTextColor(QColor(Qt::darkBlue));
     result_black->setPos(60, 210);
     scene->addItem(result_black);
     result_black->hide();
 
-    result_white = new QGraphicsTextItem("White won!");
+    result_white = new QGraphicsTextItem("White win!");
     result_white->setFont(QFont("Comic Sans MS", 70));
     result_white->setDefaultTextColor(QColor(Qt::darkBlue));
     result_white->setPos(35, 210);
@@ -149,7 +151,6 @@ MainWindow::MainWindow(QWidget *parent) :
     setChess[1][3]->setPixmap(QPixmap(":/img/black_bishop.png").scaled(35,35));
     setChess[1][4]->setPixmap(QPixmap(":/img/black_knight.png").scaled(35,35));
     setChess[1][5]->setPixmap(QPixmap(":/img/black_pawn.png").scaled(35,35));
-
     recordSet[0][0] = "wk";
     recordSet[0][1] = "wq";
     recordSet[0][2] = "wr";
@@ -162,8 +163,24 @@ MainWindow::MainWindow(QWidget *parent) :
     recordSet[1][3] = "bb";
     recordSet[1][4] = "bn";
     recordSet[1][5] = "bp";
+    for(int i = 0; i < 2; ++i) {
+        for(int j = 0; j < 4; ++j) {
+            promotion[i][j] = new QGraphicsPixmapItem();
+            promotion[i][j]->setPos(70*j, 560);
+            scene->addItem(promotion[i][j]);
+            promotion[i][j]->hide();
+            recordPromotion[i][j] = recordSet[i][j+1];
+        }
+    }
+    promotion[0][0]->setPixmap(QPixmap(":/img/white_queen.png").scaled(70,70));
+    promotion[0][1]->setPixmap(QPixmap(":/img/white_rook.png").scaled(70,70));
+    promotion[0][2]->setPixmap(QPixmap(":/img/white_bishop.png").scaled(70,70));
+    promotion[0][3]->setPixmap(QPixmap(":/img/white_knight.png").scaled(70,70));
+    promotion[1][0]->setPixmap(QPixmap(":/img/black_queen.png").scaled(70,70));
+    promotion[1][1]->setPixmap(QPixmap(":/img/black_rook.png").scaled(70,70));
+    promotion[1][2]->setPixmap(QPixmap(":/img/black_bishop.png").scaled(70,70));
+    promotion[1][3]->setPixmap(QPixmap(":/img/black_knight.png").scaled(70,70));
 }
-
 
 MainWindow::~MainWindow() {
     delete ui;
@@ -422,24 +439,40 @@ void MainWindow::check(int row, int col) {
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
-    if(movable == 0) {
-        if(event->y() > 560) {
-            row = -1;
-            col = -1;
-            setboard();
-            qDebug() << row << "" << col;
-            return;
-        }
-
+    if(movable == 0) {//play
         if(row == -1 && col == -1 && record[event->y()/70][event->x()/70][0] == turn) {
             row = event->y() / 70;
             col = event->x() / 70;
             check(row, col);
-            qDebug() << row << "" << col;
             return;
         } else if(row != -1 && col != -1) {
             if(box[event->y() / 70][event->x() / 70]->brush() == Qt::darkCyan) {
-                qDebug() << event->y() / 70 << "" << event->x() / 70;
+                if(record[row][col] == "wk")
+                    qDebug() << "white king";
+                else if(record[row][col] == "bk")
+                    qDebug() << "black king";
+                else if(record[row][col] == "wq")
+                    qDebug() << "white queen";
+                else if(record[row][col] == "bq")
+                    qDebug() << "black queen";
+                else if(record[row][col] == "wr")
+                    qDebug() << "white rook";
+                else if(record[row][col] == "br")
+                    qDebug() << "black rook";
+                else if(record[row][col] == "wb")
+                    qDebug() << "white bishop";
+                else if(record[row][col] == "bb")
+                    qDebug() << "black bishop";
+                else if(record[row][col] == "wn")
+                    qDebug() << "white knight";
+                else if(record[row][col] == "bn")
+                    qDebug() << "black knight";
+                else if(record[row][col] == "wp")
+                    qDebug() << "white pawn";
+                else if(record[row][col] == "bp")
+                    qDebug() << "black pawn";
+                qDebug() << " from" << row << col << "to" << event->y() / 70 << event->x() / 70;
+
                 if(row == 0 && col == 4)
                     bk = false;
                 if(row == 0 && col == 0)
@@ -459,7 +492,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
                         chess[0][3]->setPixmap(chess[0][0]->pixmap());
                         chess[0][3]->show();
                         record[0][3] = "br";
-                        qDebug() << "castling";
+                        qDebug() << " castling";
                     }
                     if(event->y() / 70 == 0 && event->x() / 70 == 6) {
                         chess[0][7]->hide();
@@ -467,7 +500,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
                         chess[0][5]->setPixmap(chess[0][7]->pixmap());
                         chess[0][5]->show();
                         record[0][5] = "br";
-                        qDebug() << "castling";
+                        qDebug() << " castling";
                     }
                 }
                 if(row == 7 && col == 4 && record[7][4] == "wk") {
@@ -477,7 +510,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
                         chess[7][3]->setPixmap(chess[7][0]->pixmap());
                         chess[7][3]->show();
                         record[7][3] = "wr";
-                        qDebug() << "castling";
+                        qDebug() << " castling";
                     }
                     if(event->y() / 70 == 7 && event->x() / 70 == 6) {
                         chess[7][7]->hide();
@@ -485,7 +518,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
                         chess[7][5]->setPixmap(chess[7][7]->pixmap());
                         chess[7][5]->show();
                         record[7][5] = "wr";
-                        qDebug() << "castling";
+                        qDebug() << " castling";
                     }
                 }
                 chess[row][col]->hide();
@@ -511,18 +544,26 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
                 record[row][col] = "";//update chess record
 
                 if(record[event->y() / 70][event->x() / 70][1] == "p") {
+                    y = event->y() / 70;
+                    x = event->x() / 70;
                     if(record[event->y() / 70][event->x() / 70][0] == "b" && event->y() / 70 == 7) {
-                        record[event->y() / 70][event->x() / 70] = "bq";
-                        chess[event->y() / 70][event->x() / 70]->setPixmap(QPixmap(":/img/black_queen.png").scaled(70,70));
-                        qDebug() << "promotion";
+                        setboard();
+                        for(int i = 0; i < 4; ++i) {
+                            promotion[1][i]->show();
+                        }
+                        movable = 2;
+                        Turn->hide();
+                        return;
                     }
                     if(record[event->y() / 70][event->x() / 70][0] == "w" && event->y() / 70 == 0) {
-                        record[event->y() / 70][event->x() / 70] = "wq";
-                        chess[event->y() / 70][event->x() / 70]->setPixmap(QPixmap(":/img/white_queen.png").scaled(70,70));
-                        qDebug() << "promotion";
+                        setboard();
+                        for(int i = 0; i < 4; ++i) {
+                            promotion[0][i]->show();
+                        }
+                        movable = 2;
+                        return;
                     }
                 }//promotion
-
                 if(turn == "b") {
                     turn = "w";
                     Turn->hide();
@@ -530,31 +571,60 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
                     turn = "b";
                     Turn->show();
                 }
+                qDebug() << "";
             }
             row = -1;
             col = -1;
             setboard();
         }
-        qDebug() << row << "" << col;
-    } else if(movable == 1) {
+    } else if(movable == 1) {// edit board
         if(row == -1 && col == -1) {
             if(event->y() > 560 && event->y() < 630 && event->x() < 210 && recordSet[(event->y()-560) / 35][event->x() / 35] != "") {
                 row = (event->y()-560) / 35;
                 col = event->x() / 35;
-                qDebug() << row << "" << col;
                 return;
             }
         } else if(row != -1 && col != -1) {
             if(event->y() > 560 || record[event->y()/70][event->x()/70] != "") {
                 row = -1;
                 col = -1;
-                qDebug() << row << "" << col;
                 return;
             } else {
                 chess[event->y() / 70][event->x() / 70]->setPixmap(setChess[row][col]->pixmap().scaled(70,70));
                 record[event->y() / 70][event->x() / 70] = recordSet[row][col];
-                qDebug() << event->y() / 70 << "" << event->x() / 70;
                 num[row][col]--;
+                if(col == 0) {
+                    if(row == 0)
+                        qDebug() << "white king";
+                    else
+                        qDebug() << "black king";
+                } else if(col == 1) {
+                    if(row == 0)
+                        qDebug() << "white queen";
+                    else
+                        qDebug() << "black queen";
+                } else if(col == 2) {
+                    if(row == 0)
+                        qDebug() << "white rook";
+                    else
+                        qDebug() << "black rook";
+                } else if(col == 3) {
+                    if(row == 0)
+                        qDebug() << "white bishop";
+                    else
+                        qDebug() << "black bishop";
+                } else if(col == 4) {
+                    if(row == 0)
+                        qDebug() << "white knight";
+                    else
+                        qDebug() << "black knight";
+                } else if(col == 5) {
+                    if(row == 0)
+                        qDebug() << "white pawn";
+                    else
+                        qDebug() << "black pawn";
+                }
+                qDebug() << " set on" << event->y() / 70 << event->x() / 70 << "\n";
             }
             row = -1;
             col = -1;
@@ -573,7 +643,34 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             if(num[0][0] == 0 && num[1][0] == 0)
                 Start->show();
         }
-        qDebug() << row << "" << col;
+    } else if(movable == 2) {// promotion
+        if(event->y() > 560 && event->x() < 280) {
+            if(turn == "b") {
+                chess[y][x]->setPixmap(promotion[1][event->x() / 70]->pixmap());
+                record[y][x] = recordPromotion[1][event->x() / 70];
+                turn = "w";
+                for(int i = 0; i < 4; ++i)
+                    promotion[1][i]->hide();
+            } else {
+                chess[y][x]->setPixmap(promotion[0][event->x() / 70]->pixmap());
+                record[y][x] = recordPromotion[0][event->x() / 70];
+                turn = "b";
+                Turn->show();
+                for(int i = 0; i < 4; ++i)
+                    promotion[0][i]->hide();
+            }
+            if(event->x() / 70 == 0)
+                qDebug() << " promotion queen\n";
+            else if(event->x() / 70 == 1)
+                qDebug() << " promotion rook\n";
+            else if(event->x() / 70 == 2)
+                qDebug() << " promotion bishop\n";
+            else if(event->x() / 70 == 3)
+                qDebug() << " promotion knight\n";
+            movable = 0;
+            row = -1;
+            col = -1;
+        }
     }
 }
 
