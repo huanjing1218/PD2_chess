@@ -49,8 +49,11 @@ class MainWindow : public QMainWindow {
     bool br1 = true, br2 = true, bk = true;
     bool wr1 = true, wr2 = true, wk = true;
     int row, col;
-    int movable = -1;//can not do anything
+    int movable = -1;//cannot do anything
     int num[2][6] = {{1,1,2,2,2,8}, {1,1,2,2,2,8}};
+    QGraphicsPixmapItem *promotion[2][4];
+    QString recordPromotion[2][4];
+    int x = -1, y = -1;// record for promotion
 };
 
 #endif // MAINWINDOW_H
