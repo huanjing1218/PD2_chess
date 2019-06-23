@@ -43,6 +43,8 @@ class MainWindow : public QMainWindow {
     QString record[8][8];
     QGraphicsPixmapItem *setChess[2][6];
     QString recordSet[2][6];
+    QGraphicsPixmapItem *promotion[2][4];
+    QString recordPromotion[2][4];
     QString turn;
     QPushButton *Start, *Set, *Quit;
     QGraphicsTextItem *title, *result_black, *result_white;
@@ -51,8 +53,6 @@ class MainWindow : public QMainWindow {
     int row, col;
     int movable = -1;//cannot do anything
     int num[2][6] = {{1,1,2,2,2,8}, {1,1,2,2,2,8}};
-    QGraphicsPixmapItem *promotion[2][4];
-    QString recordPromotion[2][4];
     int x = -1, y = -1;// record for promotion
 };
 
